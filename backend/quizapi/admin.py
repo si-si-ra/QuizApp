@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Question, Category, LeaderboardEntry
+from .models import Question, Category, LeaderboardEntry, QuizResult
 
 
 @admin.register(Category)
@@ -17,3 +17,10 @@ class QuestionAdmin(admin.ModelAdmin):
 @admin.register(LeaderboardEntry)
 class LeaderboardEntryAdmin(admin.ModelAdmin):
     list_display = ['name', 'score', 'total', 'category', 'difficulty', 'created_at']
+
+
+@admin.register(QuizResult)
+class QuizResultAdmin(admin.ModelAdmin):
+    list_display = ['user', 'score', 'total_questions', 'category', 'created_at']
+    list_filter = ['category', 'created_at']
+    search_fields = ['user__username']

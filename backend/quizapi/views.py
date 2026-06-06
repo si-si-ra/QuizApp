@@ -1,16 +1,21 @@
 import random
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Question, Category, LeaderboardEntry
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.generics import CreateAPIView
+from .models import Question, Category, LeaderboardEntry, QuizResult
 from .serializers import (
     QuestionSerializer,
     CategorySerializer,
     LeaderboardEntrySerializer,
+    RegisterSerializer,
+    QuizResultSerializer,
 )
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def question_list(request):
     """
     GET /api/questions/
@@ -63,3 +68,35 @@ def leaderboard(request):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class RegisterView(CreateAPIView):
+    """
+    POST /api/register/ — register a new user
+    """
+    serializer_class = RegisterSerializer
+    permission_classes = [AllowAny]
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def save_result(request):
+    """
+    POST /api/result/ — save quiz result for authenticated user
+    """
+    serializer = QuizResultSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save(user=request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_results(request):
+    """
+    GET /api/my-results/ — get all quiz results for authenticated user
+    """
+    results = QuizResult.objects.filter(user=request.user)
+    serializer = QuizResultSerializer(results, many=True)
+    return Response(serializer.data)

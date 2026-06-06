@@ -33,10 +33,20 @@ function Quiz({ onFinish }) {
   const [playerName, setPlayerName] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
+  // Get auth token
+  const getAuthHeader = () => {
+    const token = localStorage.getItem("access_token");
+    return {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+  };
+
   // Fetch categories on mount
   useEffect(() => {
     axios
-      .get(`${API}/categories/`)
+      .get(`${API}/categories/`, getAuthHeader())
       .then((res) => setCategories(res.data))
       .catch(() => {});
   }, []);
@@ -49,7 +59,10 @@ function Quiz({ onFinish }) {
       if (selectedCategory) params.append("category", selectedCategory);
       if (selectedDifficulty) params.append("difficulty", selectedDifficulty);
 
-      const res = await axios.get(`${API}/questions/?${params}`);
+      const res = await axios.get(
+        `${API}/questions/?${params}`,
+        getAuthHeader()
+      );
       if (res.data.length === 0) {
         setError("No questions found for these filters. Try a different combination.");
         setLoading(false);
@@ -62,8 +75,12 @@ function Quiz({ onFinish }) {
       setFinished(false);
       setStarted(true);
       setTimeLeft(QUESTION_TIME);
-    } catch {
-      setError("Could not reach the server. Make sure Django is running.");
+    } catch (err) {
+      if (err.response?.status === 401) {
+        setError("Session expired. Please login again.");
+      } else {
+        setError("Could not reach the server. Make sure Django is running.");
+      }
     }
     setLoading(false);
   }, [selectedCategory, selectedDifficulty]);
@@ -117,17 +134,31 @@ function Quiz({ onFinish }) {
   };
 
   const handleLeaderboardSubmit = async () => {
-    if (!playerName.trim()) return;
     try {
-      await axios.post(`${API}/leaderboard/`, {
-        name: playerName.trim(),
-        score,
-        total: questions.length,
-        category: selectedCategory || null,
-        difficulty: selectedDifficulty,
-      });
+      // Save score to user's quiz results
+      await axios.post(
+        `${API}/result/`,
+        {
+          score,
+          total_questions: questions.length,
+          category: selectedCategory || null,
+        },
+        getAuthHeader()
+      );
+
+      // Also submit to public leaderboard (optional)
+      if (playerName.trim()) {
+        await axios.post(`${API}/leaderboard/`, {
+          name: playerName.trim(),
+          score,
+          total: questions.length,
+          category: selectedCategory || null,
+          difficulty: selectedDifficulty,
+        });
+      }
+
       setSubmitted(true);
-    } catch {
+    } catch (err) {
       alert("Failed to submit score. Try again.");
     }
   };

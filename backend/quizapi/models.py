@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Category(models.Model):
@@ -59,3 +60,26 @@ class LeaderboardEntry(models.Model):
 
     class Meta:
         ordering = ['-score', 'created_at']
+
+
+class QuizResult(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='quiz_results'
+    )
+    score = models.IntegerField()
+    total_questions = models.IntegerField()
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} — {self.score}/{self.total_questions}"
+
+    class Meta:
+        ordering = ['-created_at']

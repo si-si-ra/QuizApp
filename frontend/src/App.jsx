@@ -1,15 +1,44 @@
 import { useState, useEffect } from "react";
 import Quiz from "./components/Quiz";
 import Leaderboard from "./components/Leaderboard";
+import Login from "./components/Login";
 import "./App.css";
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
   const [page, setPage] = useState("quiz"); // "quiz" | "leaderboard"
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState("");
 
   useEffect(() => {
+    // Check if user is already logged in
+    const token = localStorage.getItem("access_token");
+    const savedUsername = localStorage.getItem("username");
+    if (token) {
+      setIsLoggedIn(true);
+      setUsername(savedUsername || "User");
+    }
+
     document.body.classList.toggle("dark", darkMode);
   }, [darkMode]);
+
+  const handleLoginSuccess = () => {
+    setIsLoggedIn(true);
+    setUsername(localStorage.getItem("username") || "User");
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("username");
+    setIsLoggedIn(false);
+    setUsername("");
+    setPage("quiz");
+  };
+
+  if (!isLoggedIn) {
+    return <Login onLoginSuccess={handleLoginSuccess} />;
+  }
 
   return (
     <div className="app-wrapper">
@@ -27,6 +56,14 @@ function App() {
             onClick={() => setPage("leaderboard")}
           >
             🏆 Leaderboard
+          </button>
+          <span className="username-display">👤 {username}</span>
+          <button
+            className="logout-btn"
+            onClick={handleLogout}
+            title="Logout"
+          >
+            🚪 Logout
           </button>
           <button
             className="dark-toggle"

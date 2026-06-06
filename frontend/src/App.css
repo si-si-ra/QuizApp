@@ -48,6 +48,30 @@
   background: rgba(79,70,229,0.08);
 }
 
+.username-display {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  padding: 0 12px;
+  border-right: 1px solid var(--border);
+}
+
+.logout-btn {
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  background: var(--danger);
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.logout-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
 .dark-toggle {
   width: 40px;
   height: 40px;
