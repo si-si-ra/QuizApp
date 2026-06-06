@@ -52,6 +52,7 @@ def category_list(request):
 
 
 @api_view(['GET', 'POST'])
+@permission_classes([AllowAny])
 def leaderboard(request):
     """
     GET  /api/leaderboard/  — top 10 entries

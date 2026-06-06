@@ -64,7 +64,7 @@ class QuizResultSerializer(serializers.ModelSerializer):
         source='user.username', read_only=True
     )
     category_name = serializers.CharField(
-        source='category.name', read_only=True
+        source='category.name', read_only=True, allow_null=True
     )
 
     class Meta:
@@ -73,4 +73,9 @@ class QuizResultSerializer(serializers.ModelSerializer):
             'id', 'user', 'username', 'score', 'total_questions',
             'category', 'category_name', 'created_at'
         ]
-        read_only_fields = ['user', 'created_at']
+        read_only_fields = ['id', 'user', 'username', 'category_name', 'created_at']
+        extra_kwargs = {
+            'category': {'required': False, 'allow_null': True},
+            'score': {'required': True},
+            'total_questions': {'required': True},
+        }

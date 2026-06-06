@@ -135,31 +135,51 @@ function Quiz({ onFinish }) {
 
   const handleLeaderboardSubmit = async () => {
     try {
-      // Save score to user's quiz results
-      await axios.post(
+      // Save score to user's quiz results (requires auth)
+      const resultData = {
+        score,
+        total_questions: questions.length,
+      };
+
+      // Only include category if one was selected
+      if (selectedCategory) {
+        resultData.category = selectedCategory;
+      }
+
+      const response = await axios.post(
         `${API}/result/`,
-        {
-          score,
-          total_questions: questions.length,
-          category: selectedCategory || null,
-        },
+        resultData,
         getAuthHeader()
       );
 
-      // Also submit to public leaderboard (optional)
+      console.log("Score saved:", response.data);
+
+      // Also submit to public leaderboard (no auth required)
       if (playerName.trim()) {
-        await axios.post(`${API}/leaderboard/`, {
-          name: playerName.trim(),
-          score,
-          total: questions.length,
-          category: selectedCategory || null,
-          difficulty: selectedDifficulty,
-        });
+        try {
+          await axios.post(`${API}/leaderboard/`, {
+            name: playerName.trim(),
+            score,
+            total: questions.length,
+            category: selectedCategory || null,
+            difficulty: selectedDifficulty,
+          });
+        } catch (lbErr) {
+          console.warn("Leaderboard submission failed (non-critical):", lbErr.message);
+          // Non-critical error, continue anyway
+        }
       }
 
       setSubmitted(true);
     } catch (err) {
-      alert("Failed to submit score. Try again.");
+      console.error("Score submission error:", err.response?.data || err.message);
+      alert(
+        "Failed to submit score: " +
+          (err.response?.data?.score?.[0] ||
+            err.response?.data?.total_questions?.[0] ||
+            err.response?.data?.detail ||
+            "Unknown error")
+      );
     }
   };
 
