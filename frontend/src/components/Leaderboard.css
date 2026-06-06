@@ -1,0 +1,118 @@
+.lb-card {
+  max-width: 720px;
+  margin: 0 auto;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 36px 40px;
+}
+
+.lb-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.lb-sub {
+  text-align: center;
+  color: var(--text-muted);
+  margin-bottom: 28px;
+  font-size: 0.9rem;
+}
+
+.lb-empty {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 32px 0;
+  font-size: 0.95rem;
+}
+
+.lb-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+.lb-table th {
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  border-bottom: 2px solid var(--border);
+}
+
+.lb-table td {
+  padding: 14px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.lb-table tr:last-child td {
+  border-bottom: none;
+}
+
+.lb-table tr.top-row td {
+  font-weight: 700;
+}
+
+.medal {
+  font-size: 1.3rem;
+  min-width: 40px;
+}
+
+.player-name {
+  font-weight: 600;
+}
+
+.score-pill {
+  background: rgba(79,70,229,0.12);
+  color: var(--primary);
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.pct-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pct-bar-wrap span {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  min-width: 36px;
+}
+
+.pct-bar {
+  height: 6px;
+  background: var(--primary);
+  border-radius: 999px;
+  min-width: 4px;
+  max-width: 80px;
+  transition: width 0.5s;
+}
+
+.diff-badge {
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.diff-easy   { background: rgba(16,185,129,0.15); color: #059669; }
+.diff-medium { background: rgba(245,158,11,0.15); color: #b45309; }
+.diff-hard   { background: rgba(239,68,68,0.15);  color: #b91c1c; }
+.diff-all    { background: var(--border); color: var(--text-muted); }
+
+@media (max-width: 600px) {
+  .lb-card { padding: 24px 16px; }
+  .lb-table th:nth-child(5),
+  .lb-table td:nth-child(5) { display: none; }
+}
